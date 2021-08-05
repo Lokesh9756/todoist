@@ -52,7 +52,7 @@ var Data=JSON.stringify(rawData);
   }).then(res => res.json())
     .then(json => console.log(json));
 }
-const closetask= async() =>{
+const closeTask= async() =>{
 console.log("task is closed")
   const URL = process.env.URL + "projects/my tasks";
   const tasks=await fetch(`https://api.todoist.com/rest/v1/tasks/${process.argv[3]}/close`,{
@@ -62,7 +62,7 @@ console.log("task is closed")
     },
   })
 }
-const updatetask= async() =>{
+const updateTask= async() =>{
   var task=prompt("taskname?");
   var tasktime=prompt("tasktime?");
   var taskpriority=prompt();
@@ -84,7 +84,7 @@ var Data=JSON.stringify(rawData);
     }
   })
   }
-const deletetask= async() =>{
+const deleteTask= async() =>{
     const URL = process.env.URL + "projects/my tasks";
     const tasks=await fetch(`https://api.todoist.com/rest/v1/tasks/${process.argv[3]}`,{
       method:"DELETE",
@@ -108,15 +108,15 @@ CreateTask();
 }
 if(process.argv[2]=='closetask')
 {
-closetask();
+closeTask();
 }
 if(process.argv[2]=='deletetask')
 {
-  deletetask();
+  deleteTask();
 }
 if(process.argv[2]=='updatetask')
 {
-  updatetask();
+  updateTask();
 }
 
 
