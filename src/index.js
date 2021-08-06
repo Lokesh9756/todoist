@@ -1,295 +1,96 @@
+const yargs=require("yargs");
+const chalk=require("chalk");
 
-const fetch = require("node-fetch");
-const yargs=require("yargs").argv;
-const { v4: uuidv4 } = require('uuid');
-const result =require("dotenv").config();
-const prompt = require("prompt-sync")();
-
-
-if (result.error) {
-  throw result.error
-}
-
-const TOKEN = process.env.TOKEN
-
-
-const getAllActiveTasks= async() =>{
-  const tasks=await fetch('https://api.todoist.com/rest/v1/tasks ',{
-    headers:{
-      Authorization:`Bearer ${TOKEN}`
-    },
-  }).then((res)=>res.json());
-  console.table(tasks)
-}
-const CreateTask= async() =>{
-  var task=prompt("taskname?");
-  var tasktime=prompt("tasktime?");
-  var taskpriority=prompt();
-  
-  var rawData={
-    "content": `${task}`,
-    "due_string": `${tasktime}`,
-    "due_lang": "en",
-    "priority": parseInt(taskpriority)
-};
-var Data=JSON.stringify(rawData);
-    fetch('https://api.todoist.com/rest/v1/tasks', {
-      method: 'POST',
-      body:  Data,
-      headers: {
-        "Content-Type": "application/json",
-        "X-Request-Id": uuidv4(),
-        "Authorization": `Bearer ${TOKEN}`
-    }
-  }).then(res => res.json())
-    .then(json => console.log(json));
-}
-const closeTask= async() =>{
-  let answer=prompt("Are you sure?(Y/N)")
-  if(answer=='y'||answer=='Y')
+const fn=require("./main")
+var fnk=new fn.fn();
+yargs
+.command({
+  command: "lstasks",
+  describe: "list all the active tasks",
+  handler: fnk.getAllActiveTasks,
+})
+.command({
+  command: "showtask",
+  describe: "list details of specific task",
+  handler: fnk.getSpecificTask,
+})
+.command({
+  command: "addtask",
+  describe: "add/create a task",
+  handler: fnk.createTask,
+})
+.command({
+  command: "closetask",
+  describe: "close a specific task",
+  handler: fnk.closeTask,
+})
+.command({
+  command: "deletetask",
+  describe: "delete a specfic task",
+  handler: fnk.deleteTask,
+})
+.command({
+  command: "updatetask",
+  describe: "update a specfic task",
+  handler: fnk.updateTask,
+})
+.command({
+  command: "lsprojects",
+  describe: "list all the projects",
+  handler: fnk.getAllProjects,
+})
+.command({
+  command: "showprojecttasks",
+  describe: "list all tasks of a specific project",
+  handler: fnk.getProjectTasks,
+})
+.command({
+  command: "addproject",
+  describe: "create a projecct",
+  handler: fnk.createProject,
+})
+.command({
+  command: "addprojecttask",
+  describe: "create a task inside projectc",
+  handler: fnk. createProjectTask ,
+})
+.command({
+  command: "deleteproject",
+  describe: "delete a project",
+  handler: fnk. deleteProject,
+})
+.command({
+  command: "updateproject",
+  describe: "update a project",
+  handler: fnk. updateProject,
+})
+.argv;
+const cmd=[
+  "lstasks",
+  "showtask",
+  "addtask",
+  "closetask",
+  "deletetask",
+  "updatetask",
+  "lsprojects",
+  "addProject",
+  "showProject",
+  "updateproject",
+  "deleteproject",
+  "showprojecttasks",
+  "addprojecttask",
+  "deleteprojecttask"
+]
+let flag=0;
+for (var j=0; j<cmd.length; j++) {
+  if (cmd[j]==process.argv[2])
   {
-    const URL = process.env.URL + "projects/my tasks";
-    const tasks=await fetch(`https://api.todoist.com/rest/v1/tasks/${process.argv[3]}/close`,{
-      method:"POST",
-      headers:{
-        Authorization:`Bearer ${TOKEN}`
-      },
-    })
-    setTimeout(() => {
-      console.log("task is closed")
-    },2000);
+  flag=1;
   }
-  else{
-    console.log("Cancled")
-  }
-
- 
 }
-const updateTask= async() =>{
-  var task=prompt("taskname?");
-  var tasktime=prompt("tasktime?");
-  var taskpriority=prompt();
-  let answer=prompt("Are you sure?(Y/N)")
-  if(answer=='y'||answer=='Y')
-  {
-    var rawData={
-      "content": `${task}`,
-       "due_string": `${tasktime}`,
-       "due_lang": "en",
-       "priority": parseInt(taskpriority)
-  };
-  var Data=JSON.stringify(rawData);
-      fetch(`https://api.todoist.com/rest/v1/tasks/${process.argv[3]}`, {
-        method: 'POST',
-        body:  Data,
-        headers: {
-          "Content-Type": "application/json",
-          "X-Request-Id": uuidv4(),
-          "Authorization": `Bearer ${TOKEN}`
-      }
-    })
-  }
-  else{
-    console.log("Cancled")
-  }
 
-  }
-const deleteTask= async() =>{
-  let answer=prompt("Are you sure?(Y/N)")
-  if(answer=='y'||answer=='Y')
-  {
-    const tasks=await fetch(`https://api.todoist.com/rest/v1/tasks/${process.argv[3]}`,{
-      method:"DELETE",
-      headers:{
-        Authorization:`Bearer ${TOKEN}`
-      },
-    })
-    console.log(tasks)
-  }
-  else{
-    console.log("Cancled")
-  }
-  }
-  const getAllProjects = async () => {
- 
-    const projects = await fetch('https://api.todoist.com/rest/v1/projects', {
-      headers: {
-        Authorization: `Bearer ${TOKEN}`,
-      },
-    }).then((res) => res.json());
-    console.table(projects)
-  }
-  const getTaskOfProject = async () => {
- let projectId=prompt("enter project id:");
- let taskId=prompt("enter task id");
-
-    const projects = await fetch(`https://api.todoist.com/rest/v1/tasks/${taskId}?project_id=${projectId}`, {
-      headers: {
-        Authorization: `Bearer ${TOKEN}`,
-      },
-    }).then((res) => res.json());
-    console.table(projects)
-  }
-  const getProjectTasks = async () => {
- 
-    const projects = await fetch(`https://api.todoist.com/rest/v1/tasks?project_id=${process.argv[3]}`, {
-      headers: {
-        Authorization: `Bearer ${TOKEN}`,
-      },
-    }).then((res) => res.json());
-    console.table(projects)
-  }
-  const getProject=async()=>{
-    const projects = await fetch(`https://api.todoist.com/rest/v1/projects/${process.argv[3]}`, {
-      headers: {
-        Authorization: `Bearer ${TOKEN}`,
-      },
-    }).then((res) => res.json());
-    console.table(projects) 
-  }
-  const CreateProject= async() =>{
-    var task=prompt("taskname?");
-    var tasktime=prompt("tasktime?");
-    var taskpriority=prompt();
-    
-    var rawData={
-      "content": `${task}`,
-      "due_string": `${tasktime}`,
-      "due_lang": "en",
-      "priority": parseInt(taskpriority)
-  };
-  var Data=JSON.stringify(rawData);
-      fetch('https://api.todoist.com/rest/v1/projects/', {
-        method: 'POST',
-        body:  Data,
-        headers: {
-          "Content-Type": "application/json",
-          "X-Request-Id": uuidv4(),
-          "Authorization": `Bearer ${TOKEN}`
-      }
-    }).then(res => res.json())
-      .then(json => console.log(json));
-  }
-  // const closeProject= async() =>{
-  //   let answer=prompt("Are you sure?(Y/N)")
-  //   if(answer=='y'||answer=='Y')
-  //   {
-  //     const URL = process.env.URL + "projects/my tasks";
-  //     const tasks=await fetch(`https://api.todoist.com/rest/v1/tasks/${process.argv[3]}/close`,{
-  //       method:"POST",
-  //       headers:{
-  //         Authorization:`Bearer ${TOKEN}`
-  //       },
-  //     })
-  //     setTimeout(() => {
-  //       console.log("task is closed")
-  //     },2000);
-  //   }
-  //   else{
-  //     console.log("Cancled")
-  //   }
-  
-   
-  // }
-  const updateProject= async() =>{
-    var task=prompt("taskname?");
-    var tasktime=prompt("tasktime?");
-    var taskpriority=prompt();
-    let answer=prompt("Are you sure?(Y/N)")
-    if(answer=='y'||answer=='Y')
-    {
-      var rawData={
-        "content": `${task}`,
-         "due_string": `${tasktime}`,
-         "due_lang": "en",
-         "priority": parseInt(taskpriority)
-    };
-    var Data=JSON.stringify(rawData);
-        fetch(`https://api.todoist.com/rest/v1/projects/${process.argv[3]}`, {
-          method: 'POST',
-          body:  Data,
-          headers: {
-            "Content-Type": "application/json",
-            "X-Request-Id": uuidv4(),
-            "Authorization": `Bearer ${TOKEN}`
-        }
-      })
-    }
-    else{
-      console.log("Cancled")
-    }
-  
-    }
-  const deleteProject= async() =>{
-    let answer=prompt("Are you sure?(Y/N)")
-    if(answer=='y'||answer=='Y')
-    {
-      const tasks=await fetch(`https://api.todoist.com/rest/v1/projects/${process.argv[3]}`,{
-        method:"DELETE",
-        headers:{
-          Authorization:`Bearer ${TOKEN}`
-        },
-      })
-      console.log(tasks)
-    }
-    else{
-      console.log("Cancled")
-    }
+  if (flag==0) {
+    console.log(chalk.yellowBright("\n invalid command\n"));
+    console.log(chalk.blue("{ --node index.js --help }"));
     }
 
-if((process.argv[2]+" "+process.argv[3])==='ls tasks')
-{
-getAllActiveTasks();
-}
-if(process.argv[2]=='createtask')
-{
-CreateTask();
-}
-if(process.argv[2]=='closetask')
-{
-closeTask();
-}
-if(process.argv[2]=='deletetask')
-{
-  deleteTask();
-}
-if(process.argv[2]=='updatetask')
-{
-  updateTask();
-}
-if(process.argv[2]+" "+process.argv[3]=='ls project')
-{
-getAllProjects();
-}
-if(process.argv[2]=='showproject')
-{
-  getProject();
-}
-if(process.argv[2]=='projecttasks')
-{
-  getProjectTasks();
-}
-if(process.argv[2]=='projecttask')
-{
-  getTaskOfProject();
-}
-if(process.argv[2]=='createproject')
-{
-CreateProject();
-}
-if(process.argv[2]=='closeproject')
-{
-closeProject();
-}
-if(process.argv[2]=='deleteprojrct')
-{
-  deleteProject();
-}
-if(process.argv[2]=='updateproject')
-{
-  updateProject();
-}
-
-
-
-  
