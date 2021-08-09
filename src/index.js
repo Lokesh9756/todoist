@@ -64,6 +64,31 @@ yargs
   describe: "update a project",
   handler: fnk. updateProject,
 })
+.command({
+  command: "changeduedateofalltask",
+  describe: "change due date of all  task",
+  handler: fnk. changeDueDateOfAllTask,
+})
+.command({
+  command: "showtaskbydate",
+  describe: "show task by  date",
+  handler: fnk. showDueTask,
+})
+.command({
+  command: "showoverduetasks",
+  describe: "show task by  date",
+  handler: fnk. showOverDueTask,
+})
+.command({
+  command: "addsubtask",
+  describe: "add/create sub task in a task",
+  handler: fnk. createSubTask,
+})
+.command({
+  command: "deletealltasks",
+  describe: "delete all tasks",
+  handler: fnk. deleteAllTask,
+})
 .argv;
 const cmd=[
   "lstasks",
@@ -73,13 +98,18 @@ const cmd=[
   "deletetask",
   "updatetask",
   "lsprojects",
-  "addProject",
-  "showProject",
+  "addproject",
+  "showproject",
   "updateproject",
   "deleteproject",
   "showprojecttasks",
   "addprojecttask",
-  "deleteprojecttask"
+  "deleteprojecttask",
+  "changeduedateoftask",
+  "showtaskbydate",
+  "showoverduetasks",
+  "addsubtask" ,
+  "deletealltasks"
 ]
 let flag=0;
 for (var j=0; j<cmd.length; j++) {
@@ -90,7 +120,9 @@ for (var j=0; j<cmd.length; j++) {
 }
 
   if (flag==0) {
-    console.log(chalk.yellowBright("\n invalid command\n"));
-    console.log(chalk.blue("{ --node index.js --help }"));
+    console.log(chalk.yellowBright("Invalid command choose valid command from given:"));
+    for(let i=0;i<cmd.length;i++){
+      console.log(chalk.blue("index.js",cmd[i],"for",cmd[i]));
+    }
     }
 
