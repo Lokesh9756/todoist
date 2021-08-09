@@ -1,10 +1,9 @@
 # Todoist Using Cli
 
 Features:
-
 This project has all functionality of todoist using cli here we pass commands and done whatever we want to change/done in todoist.
 It need token only for making changes in the todoist account.
-#### Followings are the function of this cli project:
+#### Followings are the functions of this cli project:
 - we can display all active tasks.
 - we can display task by id.
 - we can update specific task by giving id.
